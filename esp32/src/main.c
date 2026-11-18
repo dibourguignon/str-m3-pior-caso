@@ -36,10 +36,7 @@
 #include "freertos/semphr.h"
 #include "freertos/task.h"
 
-#include "huffman.h"
-#if __has_include("build_mode.h")
-#include "build_mode.h"        /* gerado por build.ps1: define DEMO no modo demonstracao */
-#endif
+#include "huffman.h"            /* DEMO vem do platformio.ini (ambiente demo: -DDEMO) */
 
 /* ---------------- parametros (registrados no relatorio) ---------------- */
 #ifndef HUFF_N

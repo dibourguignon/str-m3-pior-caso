@@ -16,7 +16,8 @@ HWM, HWM(99%), skip factor e (m,k)-firme por janela deslizante.
 | `src/huffman.c/.h` | Tarefa sob teste: codifica, decodifica e valida (sem `malloc`, 100% dos desvios alcançáveis) |
 | `esp32/src/main.c` | Firmware ESP32: casos de teste (Exp. A) + etapas 1–4 |
 | `esp32/capture.py` | Reinicia a placa, **gera o estresse UART da etapa 4** e grava os CSV |
-| `esp32/build.ps1` | Compila/grava o firmware (copia para `C:\str_m3_esp32`: o ESP-IDF não aceita espaços no caminho) |
+| `esp32/platformio.ini` | Projeto PlatformIO (abrir a pasta `esp32/`); ambientes `demo` (padrão) e `campanha` |
+| `esp32/build.ps1` | Alternativa pelo terminal quando o caminho tem espaços (copia para `C:\str_m3_esp32`) |
 | `src/etapa*.c`, `src/intertarefas.c`, `src/common.h` | Etapas 1–4 na plataforma Linux (comparação) |
 | `tests/test_huffman.c` | Casos de teste do Experimento A (`-DNMAX=1024` = tamanhos do ESP32) |
 | `scripts/coverage.sh` | Cobertura de linha/desvio incremental com gcov/gcovr (N = 32768 e N = 1024) |
@@ -47,20 +48,25 @@ python3 analysis/compare.py           # figura de excedência Linux x ESP32
 bash scripts/coverage.sh              # Experimento A (gcov/gcovr)
 ```
 
-**Nova campanha no ESP32** (qualquer ESP32 DevKit; a mesma placa + o mesmo script aplicam o mesmo estímulo):
+**ESP32 pelo VS Code + PlatformIO** (qualquer ESP32 DevKit; a mesma placa + o mesmo script aplicam o mesmo estímulo):
 
-```powershell
-powershell -ExecutionPolicy Bypass -File esp32\build.ps1 -Upload -Port COM3          # campanha completa
-~\.platformio\penv\Scripts\python.exe esp32\capture.py COM3 nova                     # ~6 min -> data/nova/
-python3 analysis/analyze.py nova                                                     # figuras e tabelas de data/nova/
-```
+1. Clone o repositório em uma pasta **sem espaços** (limitação do ESP-IDF), por exemplo
+   `git clone https://github.com/dibourguignon/str-m3-pior-caso C:\str-m3-pior-caso`.
+2. No VS Code, **File → Open Folder → `C:\str-m3-pior-caso\esp32`** (a pasta `esp32`, não a raiz).
+   O `platformio.ini` fixa `platformio/espressif32@7.0.1` (ESP-IDF 6.0.1); na primeira vez o
+   PlatformIO baixa a plataforma e o ESP-IDF (~1,5 GB).
+3. Botões do PlatformIO: **Build** e **Upload**. O ambiente padrão é `demo` (1.000 ativações por
+   etapa, ~45 s); o ambiente `campanha` (10.000 / 3.000 / 10.000 / 10.000, ~6 min) gerou os dados do relatório.
+4. Feche o Serial Monitor e, no terminal do PlatformIO (pasta `esp32`), rode a captura, que gera o
+   estresse UART da etapa 4 e mostra o resumo:
+   ```powershell
+   & "$env:USERPROFILE\.platformio\penv\Scripts\python.exe" capture.py COM3 defesa
+   ```
 
-**Demonstração rápida** (1.000 ativações por etapa, ~45 s):
-
-```powershell
-powershell -ExecutionPolicy Bypass -File esp32\build.ps1 -Upload -Port COM3 -Demo
-~\.platformio\penv\Scripts\python.exe esp32\capture.py COM3 defesa
-```
+Pelo terminal, sem os botões: `pio run -e demo -t upload` (ou `-e campanha`) dentro de `esp32/`.
+Se o repositório estiver em uma pasta com espaços, `powershell -File esp32\build.ps1 -Upload [-Demo]`
+copia o projeto para `C:\str_m3_esp32` e compila lá. Depois de uma coleta:
+`python3 analysis/analyze.py defesa` gera as figuras e tabelas de `data/defesa/`.
 
 O firmware imprime, depois de cada etapa, uma linha `### RESUMO` (mín., média, HWM, HWM(99%), D,
 % no prazo, perdas, S, maior rajada e (m,20)), e o `capture.py` mostra no fim uma tabela com as quatro

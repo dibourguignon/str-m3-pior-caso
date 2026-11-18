@@ -6,3 +6,8 @@ cov1024/
 bin/
 *.gcda
 *.gcno
+sdkconfig.demo
+sdkconfig.campanha
+sdkconfig.esp32dev
+data/defesa/
+results/defesa_*

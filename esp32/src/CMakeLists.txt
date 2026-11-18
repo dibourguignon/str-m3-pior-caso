@@ -1,3 +1,3 @@
-# huffman.c/.h sao copiados de ../src (o MESMO codigo da plataforma Linux) por build.ps1
-idf_component_register(SRCS "main.c" "huffman.c"
-                       INCLUDE_DIRS ".")
+# A tarefa Huffman e o MESMO arquivo usado na plataforma Linux: ../../src/huffman.c
+idf_component_register(SRCS "main.c" "../../src/huffman.c"
+                       INCLUDE_DIRS "." "../../src")
