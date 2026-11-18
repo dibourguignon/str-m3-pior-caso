@@ -213,7 +213,10 @@ mínimo já passa de $D$ e a distribuição tem dois grupos, um perto de 3,3\ms{
 outro perto de 3,9\ms, com 3,0\% das ativações. Na etapa 4, a distribuição é
 larga: p1 e p99 valem 4,41 e 11,56\ms, o desvio-padrão é de 1.769\us{} (CV de
 23,6\%) e a cauda chega a 15,2\ms. A média de 7.488\us{} fica longe do máximo e
-não descreve esse espalhamento.
+não descreve esse espalhamento. Avaliado só pela etapa 1, o sistema pareceria
+folgado (100\% no prazo, HWM 17\% abaixo de $D$), o ``erro clássico'' que o
+enunciado manda evitar~\cite{enunciado}; as etapas 3 e 4 mostram que essa
+conclusão estaria errada.
 
 % ============================ 3 =======================================
 \section{Evolução temporal, perdas e skip factor}
@@ -554,7 +557,8 @@ vezes), sempre pelos mesmos caminhos de um código com 100\% de cobertura de
 linhas e desvios. O aumento vem da concorrência: preempção, bloqueio,
 interrupções e cache, que só aparecem nos escopos intertarefas e de sistema.
 Por isso o $D$ tirado da tarefa isolada foi perdido em todas as ativações das
-etapas 3 e 4, e nenhuma das margens fixas cobriu a etapa 3.
+etapas 3 e 4, e nenhuma das margens fixas cobriu a etapa 3: medir apenas a
+tarefa isolada levaria ao erro clássico.
 
 Como o WCRT não pode ser medido com certeza, o modelo $(m,k)$-firme dá um
 critério que pode ser conferido janela a janela. Com os dados, foi possível
