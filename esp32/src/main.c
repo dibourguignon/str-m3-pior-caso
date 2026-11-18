@@ -65,6 +65,9 @@
 #define STACK_HUFF    12288      /* gen_codes usa ~7 KiB de pilha */
 
 /* ---------------- relogio, PRNG, trabalho sintetico ---------------- */
+/* Relogio da medicao, exigido pelo enunciado: clock_gettime(CLOCK_MONOTONIC).
+ * No ESP-IDF ele e baseado no esp_timer (contador de hardware), com resolucao
+ * de 1 us, nao depende do tick do FreeRTOS e nunca anda para tras. */
 static inline uint64_t now_us(void)
 {
     struct timespec ts;
@@ -72,6 +75,10 @@ static inline uint64_t now_us(void)
     return (uint64_t)ts.tv_sec * 1000000ull + (uint64_t)ts.tv_nsec / 1000ull;
 }
 
+/* Gerador pseudoaleatorio xorshift64* com semente fixa (20261118): a mesma
+ * semente gera sempre a mesma entrada, o que torna o experimento repetivel.
+ * Usa aritmetica de 64 bits, que no Xtensa (32 bits) e emulada em software;
+ * por isso a tarefa sensor custa ~1 ms, mais que os 250 us do laco calibrado. */
 static inline uint64_t rng_next(uint64_t *s)
 {
     uint64_t x = *s;
@@ -84,6 +91,9 @@ static inline uint64_t rng_seed(uint64_t seed)
     uint64_t s = seed * 0x9E3779B97F4A7C15ull + 0x632BE59BD9B4E019ull;
     return s ? s : 1;
 }
+/* Caracteres ASCII imprimiveis (32..126). Usa o menor de dois sorteios para a
+ * distribuicao nao ser uniforme: alguns simbolos ficam mais frequentes, como
+ * num texto real, e a arvore de Huffman fica desbalanceada (~6,2 bits/simbolo). */
 static void fill_random(uint8_t *buf, size_t n, uint64_t *s)
 {
     for (size_t i = 0; i < n; i++) {
@@ -93,6 +103,9 @@ static void fill_random(uint8_t *buf, size_t n, uint64_t *s)
     }
 }
 
+/* Trabalho sintetico de duracao conhecida (usado pelo sensor e pelo logger).
+ * calib_task mede quantas iteracoes cabem em 1 us e converte SENSOR_US e
+ * LOGGER_US em numero de iteracoes. g_sink impede o compilador de remover o laco. */
 static volatile uint32_t g_sink;
 static void busy_iters(uint32_t it)
 {
@@ -127,6 +140,9 @@ static void alloc_or_die(void **p, size_t sz, const char *what)
 }
 
 /* ================= despejo dos dados ================= */
+/* Os tempos ficam em RAM durante a etapa e so sao enviados pela serial no fim:
+ * imprimir durante a medicao acrescentaria interferencia (efeito da
+ * instrumentacao). O formato ativacao,tempo_us e o pedido pelo enunciado. */
 static void dump(const char *name, size_t n, int detail)
 {
     printf("\n### INICIO %s n=%u falhas=%" PRIu32 " eventos=%" PRIu32 " uart_bytes=%" PRIu32
@@ -171,7 +187,9 @@ static void resumo(const char *name, size_t n)
             last = i + 1; perdas++;
             if (++run > maior) maior = run;
         } else run = 0;
-        win += miss;                                      /* janela deslizante k = 20 */
+        /* janela deslizante k = 20: soma a perda que entra e tira a que sai
+         * (ativacao i-20); a pior janela da m = 20 - pior */
+        win += miss;
         if (i >= 20 && g_resp[i - 20] > g_D) win--;
         if (i >= 19 && win > pior) pior = win;
     }
@@ -190,11 +208,14 @@ static void resumo(const char *name, size_t n)
 }
 
 /* ================= Etapa 1 ================= */
+/* Teste de tarefa: Huffman sozinho no nucleo 1, sem outras tarefas da
+ * aplicacao. Tempo de resposta = fim - inicio da ativacao. O HWM desta etapa
+ * define o deadline D usado em todas as etapas. */
 static void etapa1_task(void *arg)
 {
     uint64_t rs = rng_seed(SEED);
     for (size_t k = 0; k < ACTS1; k++) {
-        fill_random(g_shared, HUFF_N, &rs);               /* fora da medicao */
+        fill_random(g_shared, HUFF_N, &rs);               /* vetor novo, gerado fora da medicao */
         uint64_t t0 = now_us();
         memcpy(g_local, g_shared, HUFF_N);
         int r = huff_task(&g_ctx, g_local, HUFF_N);
@@ -207,6 +228,9 @@ static void etapa1_task(void *arg)
 }
 
 /* ================= GPIO: evento externo ================= */
+/* Rotina de interrupcao da borda de subida no GPIO 18. Fica na IRAM (rapida,
+ * independe do cache da flash) e so acorda a tarefa que trata o evento; o
+ * trabalho pesado (Huffman) e feito fora da interrupcao. */
 static void IRAM_ATTR gpio_isr(void *arg)
 {
     BaseType_t hp = pdFALSE;
@@ -232,7 +256,10 @@ static void gpio_teardown(void)
     gpio_uninstall_isr_service();
 }
 
-/* gerador no nucleo 0: um evento por vez, intervalo aleatorio [min,max] ms */
+/* Gerador de eventos no nucleo 0: um evento por vez, intervalo aleatorio
+ * [min,max] ms. O pino e configurado como entrada e saida ao mesmo tempo, entao
+ * o proprio ESP32 gera a borda que provoca a interrupcao no nucleo 1 (sem fio
+ * externo). g_t_emit guarda o instante da borda: e o inicio da medicao na etapa 2. */
 typedef struct { int min_ms, max_ms; size_t count; } gen_cfg_t;
 static void generator_task(void *arg)
 {
@@ -252,6 +279,9 @@ static void generator_task(void *arg)
 }
 
 /* ================= Etapa 2 ================= */
+/* Teste comportamental: a tarefa espera o evento, roda o Huffman e confirma
+ * (ACK) para o gerador liberar o proximo. Tempo de resposta = fim - instante da
+ * borda, ou seja, inclui a interrupcao e o despacho da tarefa. */
 static void etapa2_task(void *arg)
 {
     gpio_setup_on_this_core();
@@ -278,6 +308,13 @@ static volatile uint64_t g_base, g_tick;
 static volatile int64_t g_isr_off;                       /* now_us() - esp_timer_get_time() */
 #define REL_STOP UINT64_MAX
 
+/* Interrupcao do timer de hardware (1 kHz) que libera as tarefas periodicas das
+ * etapas 3 e 4. A cada tick, coloca na fila de cada tarefa o instante IDEAL da
+ * liberacao (g_base + tick x 1 ms): sensor a cada 4 ticks, huffman a cada 10,
+ * logger a cada 33. A medicao parte desse instante ideal, entao qualquer atraso
+ * (espera, preempcao, bloqueio, a propria interrupcao atrasada) entra no tempo de
+ * resposta. Se a interrupcao for adiada, o laco recupera os ticks perdidos.
+ * No tick 1 as tres tarefas sao liberadas juntas (instante critico). */
 static bool IRAM_ATTR on_tick(gptimer_handle_t t, const gptimer_alarm_event_data_t *e, void *ctx)
 {
     BaseType_t hp = pdFALSE;
@@ -294,6 +331,10 @@ static bool IRAM_ATTR on_tick(gptimer_handle_t t, const gptimer_alarm_event_data
     return hp == pdTRUE;
 }
 
+/* sensor: T = 4 ms, prioridade 12 (a maior: menor periodo, rate monotonic).
+ * Processa (~250 us de laco) e escreve 128 B no buffer compartilhado sob o mutex.
+ * Como e liberado a cada 4 ms e o Huffman dura ~2,2 ms, ele interrompe toda
+ * ativacao do huffman uma vez -> e a causa dos 0% no prazo na etapa 3. */
 static void sensor_task(void *arg)
 {
     uint64_t rel;
@@ -310,6 +351,11 @@ static void sensor_task(void *arg)
     vTaskDelete(NULL);
 }
 
+/* logger: T = 33 ms, prioridade 8 (a menor). Le o buffer inteiro e segura o mutex
+ * por ~1,5 ms. Quando o huffman chega nesse intervalo, fica bloqueado esperando o
+ * mutex (bloqueio B da analise de tempo de resposta). Pela heranca de prioridade
+ * do mutex do FreeRTOS, o logger roda com a prioridade do huffman enquanto o
+ * segura, e nenhuma tarefa intermediaria passa na frente. */
 static void logger_task(void *arg)
 {
     uint64_t rel;
@@ -327,20 +373,24 @@ static void logger_task(void *arg)
     vTaskDelete(NULL);
 }
 
+/* huffman: T = 10 ms, prioridade 10. E a tarefa sob teste nas etapas 3 e 4.
+ * Copia o buffer compartilhado sob o mutex e roda o Huffman fora dele.
+ * Ativacoes atrasadas nao sao descartadas: as liberacoes esperam na fila. */
 static void huffman_periodic_task(void *arg)
 {
     uint64_t rel;
     g_k = 0;
     for (size_t k = 0; k < ACTS34 && !g_abort; k++) {
         if (xQueueReceive(q_huff, &rel, pdMS_TO_TICKS(200)) != pdTRUE) { k--; continue; }
-        uint64_t ts = now_us();
-        xSemaphoreTake(g_mtx, portMAX_DELAY);
-        uint64_t tl = now_us();
+        uint64_t ts = now_us();                           /* inicio real da execucao */
+        xSemaphoreTake(g_mtx, portMAX_DELAY);             /* pode esperar o logger (bloqueio) */
+        uint64_t tl = now_us();                           /* conseguiu o mutex */
         memcpy(g_local, g_shared, HUFF_N);
         xSemaphoreGive(g_mtx);
         int r = huff_task(&g_ctx, g_local, HUFF_N);
-        uint64_t te = now_us();
-        g_resp[k] = (uint32_t)(te - rel);
+        uint64_t te = now_us();                           /* fim da ativacao */
+        g_resp[k] = (uint32_t)(te - rel);                 /* tempo de resposta = fim - liberacao ideal */
+        /* detalhe usado na analise das causas: latencia de inicio e espera no mutex */
         uint64_t lat = ts > rel ? ts - rel : 0, wt = tl - ts;
         g_lat[k]  = (uint16_t)(lat > 65535 ? 65535 : lat);
         g_wait[k] = (uint16_t)(wt > 65535 ? 65535 : wt);
@@ -351,7 +401,8 @@ static void huffman_periodic_task(void *arg)
     vTaskDelete(NULL);
 }
 
-/* tarefa esporadica da etapa 4: trata o evento GPIO codificando um pacote */
+/* Tarefa esporadica da etapa 4 (prioridade 11, acima do huffman): trata o evento
+ * GPIO codificando um pacote de 256 B. Os eventos chegam a cada 2-8 ms. */
 static void event_task(void *arg)
 {
     gpio_setup_on_this_core();
@@ -402,6 +453,8 @@ static void uart_rx_task(void *arg)
     int pos = 0;
     while (!g_stop) {
         int n = uart_read_bytes(UART_NUM_0, chunk, sizeof chunk, pdMS_TO_TICKS(20));
+        /* maquina de estados simples: procura o cabecalho A5 5A, junta 262 bytes,
+         * confere a soma do payload e, se estiver certa, codifica o payload */
         for (int i = 0; i < n; i++) {
             uint8_t b = chunk[i];
             g_uart_bytes++;
@@ -476,6 +529,8 @@ static uint32_t run_periodic(int stage)
     fill_random(g_shared, HUFF_N, &g_sensor_rs);
     g_wpos = 0;
 
+    /* Etapa 4 = etapa 3 + carga externa: eventos GPIO e trafego UART do PC.
+     * As cargas sao iniciadas antes do timer e estabilizam por 1,5 s. */
     int extra = 0;
     static gen_cfg_t gen4 = { 2, 8, 0 };
     if (stage == 4) {
@@ -664,7 +719,8 @@ void app_main(void)
     wait_done(1);
     printf("etapa1: bits codificados %u (%.2f bits/simbolo)\n", (unsigned)g_ctx.enc_bits, (double)g_ctx.enc_bits / HUFF_N);
     dump("etapa1_tarefa", ACTS1, 0);
-    {   /* D fixo = 1,2 x HWM(100%) da etapa 1, o mesmo para as quatro etapas */
+    {   /* D fixo = 1,2 x HWM(100%) da etapa 1, o mesmo para as quatro etapas
+         * (regra sugerida no enunciado; mudar D entre etapas impediria comparar) */
         uint32_t h1 = 0;
         for (size_t i = 0; i < ACTS1; i++) if (g_resp[i] > h1) h1 = g_resp[i];
         g_D = (uint32_t)(1.2 * h1);

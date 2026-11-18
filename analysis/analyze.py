@@ -59,13 +59,28 @@ def load(path):
 
 
 def hwm_pct(x, pct):
-    """HWM(pct): maximo apos descartar (100-pct)% das maiores medicoes."""
+    """HWM(pct): maximo apos descartar (100-pct)% das maiores medicoes.
+
+    Ex.: 10.000 medicoes e pct = 99 -> ordena, descarta as 100 maiores e
+    devolve a maior que sobrou. Nao e percentil interpolado: e sempre um
+    valor que foi de fato medido."""
     xs = np.sort(x)
     drop = int(round(len(xs) * (100 - pct) / 100.0))
     return float(xs[len(xs) - drop - 1])
 
 
 def miss_analysis(x, D):
+    """Analise das perdas de deadline (secoes 6.3 e 6.4 do enunciado).
+
+    perda           : ativacao com R > D (R = D conta como cumprido)
+    idx / dist      : lista das ativacoes perdidas e distancias entre perdas seguidas
+    S (skip factor) : menor distancia entre duas perdas; S = 1 = perdas consecutivas
+    runs            : tamanho de cada sequencia de perdas seguidas (1 = isolada,
+                      >= 2 = rajada)
+    janela          : para k = 10, 20 e 50, conta as perdas em cada posicao da
+                      janela deslizante (todas as N-k+1 janelas completas,
+                      avancando uma ativacao por vez); m = k - pior janela
+    """
     miss = x > D
     idx = np.flatnonzero(miss) + 1                       # ativacoes (1-based)
     dist = np.diff(idx)
@@ -85,6 +100,7 @@ def miss_analysis(x, D):
     mk = {}
     win = {}
     for k in KS:
+        # convolucao com k uns = soma movel: w[i] = perdas nas ativacoes i+1 .. i+k
         w = np.convolve(miss.astype(int), np.ones(k, dtype=int), mode="valid")
         win[k] = w
         mk[k] = (int(k - w.max()), k, int(w.max()))
@@ -101,7 +117,12 @@ def max_miss_window(miss, k):
 
 
 def min_D_for(x, m, k):
-    """Menor D (dentre os valores medidos) tal que a sequencia e (m,k)-firme."""
+    """Menor D (dentre os valores medidos) tal que a sequencia e (m,k)-firme.
+
+    Usado no Experimento D. Aumentar D nunca cria perdas novas, entao o pior
+    numero de perdas por janela so diminui com D. Isso permite busca binaria
+    sobre os proprios tempos medidos (em ordem crescente): o menor candidato
+    com no maximo k - m perdas na pior janela e a resposta."""
     cand = np.unique(x)
     lo, hi = 0, len(cand) - 1                           # com D = max, 0 perdas
     while lo < hi:                                      # perdas maximas e monotona em D

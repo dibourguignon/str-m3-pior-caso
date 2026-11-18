@@ -1,6 +1,21 @@
 /*
  * huffman.c - Codificacao de Huffman com validacao (decodifica e compara)
  * Sistemas em Tempo Real - UNIVALI - Atividade complementar M3
+ *
+ * Uma ativacao da tarefa (huff_task) faz, em ordem:
+ *   1. conta quantas vezes cada byte aparece na entrada (freq[]);
+ *   2. monta a arvore de Huffman juntando sempre os dois nos de menor
+ *      frequencia (min-heap) -> simbolos frequentes ficam perto da raiz;
+ *   3. percorre a arvore e gera o codigo de cada simbolo
+ *      (esquerda = bit 0, direita = bit 1);
+ *   4. codifica a entrada, bit a bit, em c->enc;
+ *   5. decodifica c->enc descendo a arvore a partir da raiz;
+ *   6. compara a saida decodificada com a entrada (validacao exigida pelo
+ *      enunciado: o teste de tarefa confirma a corretude logica).
+ *
+ * O modulo nao usa malloc (os buffers vem do chamador): o tempo medido e so o
+ * do algoritmo, sem variacao do alocador, e todos os desvios podem ser
+ * alcancados pelos 7 casos de teste (100% de cobertura de linha e de desvio).
  */
 #include "huffman.h"
 #include <string.h>
@@ -16,6 +31,8 @@ void huff_setup(huff_ctx_t *c, uint8_t *enc, uint8_t *dec)
 }
 
 /* ---------------- min-heap de indices de nos ---------------- */
+/* Fila de prioridade em vetor: o no de menor frequencia fica sempre em heap[0].
+ * Filhos de i: 2i+1 e 2i+2; pai de i: (i-1)/2. Inserir e remover custam O(log n). */
 
 /* Ordem total: frequencia e, em empate, indice do no (determinismo). */
 static int node_less(const huff_ctx_t *c, int a, int b)
@@ -78,10 +95,14 @@ static int heap_pop(huff_ctx_t *c)
 
 /* ---------------- arvore e codigos ---------------- */
 
+/* Monta a arvore de Huffman. Os nos ficam no vetor c->node (sem malloc):
+ * primeiro uma folha por simbolo presente, depois os nos internos criados
+ * ao juntar os dois menores. Com k simbolos distintos ha 2k-1 nos. */
 static void build_tree(huff_ctx_t *c)
 {
     c->n_nodes = 0;
     c->heap_size = 0;
+    /* uma folha para cada simbolo que aparece pelo menos uma vez */
     for (int s = 0; s < HUFF_SYMBOLS; s++) {
         if (c->freq[s] == 0)
             continue;
@@ -96,6 +117,8 @@ static void build_tree(huff_ctx_t *c)
         c->root = -1;
         return;
     }
+    /* passo central do algoritmo: retira os dois nos menos frequentes e cria
+     * um no pai com a soma das frequencias, ate sobrar um so (a raiz) */
     while (c->heap_size > 1) {
         int a = heap_pop(c);
         int b = heap_pop(c);
@@ -110,15 +133,20 @@ static void build_tree(huff_ctx_t *c)
     c->root = heap_pop(c);
 }
 
+/* Gera o codigo de cada simbolo: o caminho da raiz ate a folha
+ * (esquerda = 0, direita = 1). A profundidade da folha e o tamanho do codigo. */
 static void gen_codes(huff_ctx_t *c)
 {
     memset(c->code_len, 0, sizeof c->code_len);
-    if (c->node[c->root].left < 0) {  /* um unico simbolo: codigo "0" */
+    /* caso especial: so um simbolo distinto -> a raiz ja e folha (caminho vazio);
+     * usa-se o codigo "0" com 1 bit para que a codificacao tenha tamanho > 0 */
+    if (c->node[c->root].left < 0) {
         c->code[c->node[c->root].symbol] = 0;
         c->code_len[c->node[c->root].symbol] = 1;
         return;
     }
-    /* DFS iterativa: pilha de (no, codigo, comprimento) */
+    /* busca em profundidade iterativa (sem recursao, pilha de tamanho fixo):
+     * cada entrada guarda o no, o codigo acumulado ate ele e seu comprimento */
     int      st_node[HUFF_NODES];
     uint64_t st_code[HUFF_NODES];
     uint8_t  st_len[HUFF_NODES];
@@ -142,16 +170,20 @@ static void gen_codes(huff_ctx_t *c)
 
 void huff_encode(huff_ctx_t *c, const uint8_t *in, size_t n)
 {
+    /* 1. histograma de frequencias */
     memset(c->freq, 0, sizeof c->freq);
     for (size_t i = 0; i < n; i++)
         c->freq[in[i]]++;
 
+    /* 2-3. arvore e codigos (entrada vazia: nao ha o que codificar) */
     build_tree(c);
     c->enc_bits = 0;
     if (c->root < 0)
         return;
     gen_codes(c);
 
+    /* 4. escreve os codigos em sequencia, bit a bit, do mais significativo
+     *    para o menos significativo de cada byte de saida */
     size_t total_bits = 0;
     for (int s = 0; s < HUFF_SYMBOLS; s++)
         total_bits += (size_t)c->freq[s] * c->code_len[s];
@@ -170,6 +202,9 @@ void huff_encode(huff_ctx_t *c, const uint8_t *in, size_t n)
     c->enc_bits = pos;
 }
 
+/* 5. Decodifica: para cada simbolo, parte da raiz e segue um bit por vez
+ *    (0 = esquerda, 1 = direita) ate chegar a uma folha. Como nenhum codigo e
+ *    prefixo de outro, a folha encontrada identifica o simbolo sem ambiguidade. */
 void huff_decode(huff_ctx_t *c, size_t n)
 {
     if (c->root < 0)
@@ -192,6 +227,8 @@ void huff_decode(huff_ctx_t *c, size_t n)
     }
 }
 
+/* 6. Validacao: a saida decodificada tem de ser identica a entrada.
+ *    O caso de teste 7 corrompe 1 bit de proposito para exercitar o retorno -1. */
 int huff_validate(const uint8_t *a, const uint8_t *b, size_t n)
 {
     for (size_t i = 0; i < n; i++)
@@ -200,6 +237,8 @@ int huff_validate(const uint8_t *a, const uint8_t *b, size_t n)
     return 0;
 }
 
+/* Uma ativacao completa da tarefa sob teste. E exatamente este trecho que fica
+ * entre as duas leituras de clock_gettime nas etapas 1 a 4. */
 int huff_task(huff_ctx_t *c, const uint8_t *in, size_t n)
 {
     huff_encode(c, in, n);
