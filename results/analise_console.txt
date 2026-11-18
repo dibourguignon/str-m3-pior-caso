@@ -1,0 +1,157 @@
+D = 6549.1 us
+1. Tarefa | 100% / 100% | 1491 | 1581 | 5458 | 1956 | 100.00 | - | (10,10) | (20,20) | (50,50)
+2. Comportamental | 100% / 100% | 1548 | 1743 | 4719 | 2043 | 100.00 | - | (10,10) | (20,20) | (50,50)
+3. Intertarefas | 100% / 100% | 1535 | 1838 | 5847 | 2605 | 100.00 | - | (10,10) | (20,20) | (50,50)
+4. Sistema | 100% / 100% | 1552 | 3195 | 69551 | 10744 | 96.25 | 1 | (0,10) | (2,20) | (14,50)
+convergencia: {
+"0": {
+"marcos": {
+"10": 1650.457,
+"20": 1650.457,
+"100": 1650.457,
+"1000": 3417.06,
+"3000": 5163.596,
+"10000": 5457.548
+},
+"n_saltos": 12,
+"ultimo_salto": 9570,
+"n_95": 9570
+},
+"1": {
+"marcos": {
+"10": 1878.663,
+"20": 1896.629,
+"100": 3710.409,
+"1000": 3710.409,
+"3000": 4719.153
+},
+"n_saltos": 7,
+"ultimo_salto": 1871,
+"n_95": 1871
+},
+"2": {
+"marcos": {
+"10": 2060.172,
+"20": 2662.222,
+"100": 2662.222,
+"1000": 5107.702,
+"3000": 5485.566,
+"10000": 5847.189
+},
+"n_saltos": 7,
+"ultimo_salto": 7997,
+"n_95": 7997
+},
+"3": {
+"marcos": {
+"10": 4464.441,
+"20": 7158.738,
+"100": 12067.274,
+"1000": 68529.132,
+"3000": 68529.132,
+"10000": 69550.792
+},
+"n_saltos": 9,
+"ultimo_salto": 9660,
+"n_95": 197
+}
+}
+minD: {'(19,20)': {'etapa4': 64259.415, 'etapa3': 5162.871}, '(18,20)': {'etapa4': 58597.168, 'etapa3': 2713.772}, '(15,20)': {'etapa4': 35448.902, 'etapa3': 2220.027}, '(10,20)': {'etapa4': 12408.728, 'etapa3': 2036.754}}
+{'D_rotulo': 'D1 = HWM(100%) etapa 1', 'D_us': 5457.5, 'etapa': '3. Intertarefas', 'pct_ok': np.float64(99.98), 'perdas': 2, 'S': 5000, 'mk20': '(19,20)', 'isoladas': 2, 'rajadas': 0, 'maior_rajada': 1, 'mk10': '(9,10)', 'mk50': '(49,50)'}
+{'D_rotulo': 'D1 = HWM(100%) etapa 1', 'D_us': 5457.5, 'etapa': '4. Sistema', 'pct_ok': np.float64(94.38), 'perdas': 562, 'S': 1, 'mk20': '(2,20)', 'isoladas': 342, 'rajadas': 71, 'maior_rajada': 10, 'mk10': '(0,10)', 'mk50': '(14,50)'}
+{'D_rotulo': 'D fixo = 1,2 x HWM etapa 1', 'D_us': 6549.1, 'etapa': '3. Intertarefas', 'pct_ok': np.float64(100.0), 'perdas': 0, 'S': None, 'mk20': '(20,20)', 'isoladas': 0, 'rajadas': 0, 'maior_rajada': 0, 'mk10': '(10,10)', 'mk50': '(50,50)'}
+{'D_rotulo': 'D fixo = 1,2 x HWM etapa 1', 'D_us': 6549.1, 'etapa': '4. Sistema', 'pct_ok': np.float64(96.25), 'perdas': 375, 'S': 1, 'mk20': '(2,20)', 'isoladas': 244, 'rajadas': 42, 'maior_rajada': 10, 'mk10': '(0,10)', 'mk50': '(14,50)'}
+{'D_rotulo': 'D2 = intermediário', 'D_us': 8646.6, 'etapa': '3. Intertarefas', 'pct_ok': np.float64(100.0), 'perdas': 0, 'S': None, 'mk20': '(20,20)', 'isoladas': 0, 'rajadas': 0, 'maior_rajada': 0, 'mk10': '(10,10)', 'mk50': '(50,50)'}
+{'D_rotulo': 'D2 = intermediário', 'D_us': 8646.6, 'etapa': '4. Sistema', 'pct_ok': np.float64(98.02), 'perdas': 198, 'S': 1, 'mk20': '(5,20)', 'isoladas': 137, 'rajadas': 18, 'maior_rajada': 10, 'mk10': '(0,10)', 'mk50': '(22,50)'}
+{'D_rotulo': 'D3 = HWM(99%) etapa 4', 'D_us': 10744.2, 'etapa': '3. Intertarefas', 'pct_ok': np.float64(100.0), 'perdas': 0, 'S': None, 'mk20': '(20,20)', 'isoladas': 0, 'rajadas': 0, 'maior_rajada': 0, 'mk10': '(10,10)', 'mk50': '(50,50)'}
+{'D_rotulo': 'D3 = HWM(99%) etapa 4', 'D_us': 10744.2, 'etapa': '4. Sistema', 'pct_ok': np.float64(99.0), 'perdas': 100, 'S': 1, 'mk20': '(8,20)', 'isoladas': 61, 'rajadas': 11, 'maior_rajada': 9, 'mk10': '(1,10)', 'mk50': '(28,50)'}
+expC: [
+{
+"etapa": "1. Tarefa",
+"hwm": 5457.548,
+"margem_necessaria_pct": 0.0,
+"cv_pct": 7.5426810334109415,
+"faixa_p1_p99": [
+1508.43081,
+1955.51871
+],
+"ok_10": true,
+"ok_25": true,
+"ok_50": true,
+"pct_cobre_10": 100.0,
+"pct_cobre_25": 100.0,
+"pct_cobre_50": 100.0
+},
+{
+"etapa": "2. Comportamental",
+"hwm": 4719.153,
+"margem_necessaria_pct": -13.52979396608146,
+"cv_pct": 7.889488735256441,
+"faixa_p1_p99": [
+1567.5795899999998,
+2043.20725
+],
+"ok_10": true,
+"ok_25": true,
+"ok_50": true,
+"pct_cobre_10": 100.0,
+"pct_cobre_25": 100.0,
+"pct_cobre_50": 100.0
+},
+{
+"etapa": "3. Intertarefas",
+"hwm": 5847.189,
+"margem_necessaria_pct": 7.139488283016493,
+"cv_pct": 13.150282457847638,
+"faixa_p1_p99": [
+1557.4493,
+2605.004260000001
+],
+"ok_10": true,
+"ok_25": true,
+"ok_50": true,
+"pct_cobre_10": 100.0,
+"pct_cobre_25": 100.0,
+"pct_cobre_50": 100.0
+},
+{
+"etapa": "4. Sistema",
+"hwm": 69550.792,
+"margem_necessaria_pct": 1174.396340627696,
+"cv_pct": 73.85338812059925,
+"faixa_p1_p99": [
+1749.38075,
+10745.407460000026
+],
+"ok_10": false,
+"ok_25": false,
+"ok_50": false,
+"pct_cobre_10": 95.65,
+"pct_cobre_25": 96.61999999999999,
+"pct_cobre_50": 97.76
+}
+]
+causas: {
+"3": {
+"lat_media": 191.5148142,
+"lat_max": 1692.154,
+"espera_media": 9.619551999999999,
+"espera_max": 1082.077,
+"pct_bloqueadas_100us": 1.58,
+"perdas_com_bloqueio_pct": null,
+"perdas_com_lat_500_pct": null,
+"exec_sem_bloqueio_media": 1637.1840668,
+"exec_sem_bloqueio_max": 5135.961
+},
+"4": {
+"lat_media": 501.88991970000006,
+"lat_max": 68006.873,
+"espera_media": 25.106072400000002,
+"espera_max": 10431.613,
+"pct_bloqueadas_100us": 2.55,
+"perdas_com_bloqueio_pct": 3.4666666666666663,
+"perdas_com_lat_500_pct": 68.26666666666667,
+"exec_sem_bloqueio_media": 2668.2978232,
+"exec_sem_bloqueio_max": 18472.278000000002
+}
+}

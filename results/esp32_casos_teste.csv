@@ -1,0 +1,8 @@
+caso,descricao,n,repeticoes,ok,hwm_us
+1,aleatorio N=1024 (mesma entrada da etapa 1),1024,200,sim,2251
+2,entrada vazia (n=0),0,200,sim,26
+3,um unico simbolo repetido (n=1000),1000,200,sim,423
+4,dois simbolos (n=999),999,200,sim,583
+5,256 simbolos com frequencias iguais,256,200,sim,2014
+6,frequencias de Fibonacci (n=1024),1024,200,sim,1029
+7,validacao detecta saida corrompida,64,200,sim,290

@@ -1,0 +1,28 @@
+Host Windows 11 Pro 10.0.26200
+GUID do Esquema de Energia: cf8e6ea0-48dd-46de-a711-5ad29e527500  (Desempenho M ximo)Processos em execucao no Windows: 333
+
+Name                   CPU
+----                   ---
+Discord          8215,4375
+chrome         5652,296875
+AMDRSServ        5367,9375
+chrome          2553,40625
+Discord        1817,703125
+chrome          1237,96875
+Discord           964,0625
+explorer        813,171875
+alethe           789,84375
+chrome             782,875
+chrome           498,90625
+steamwebhelper  424,171875
+OpenBot         407,890625
+claude             385,875
+claude              385,25
+claude          382,515625
+msedgewebview2  370,828125
+chrome          341,859375
+claude           323,21875
+TranslucentTB   303,671875
+
+
+

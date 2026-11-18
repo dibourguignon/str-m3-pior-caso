@@ -1,0 +1,7 @@
+stress-ng: metrc: [563] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [563]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [563] cpu             1205552    130.00    981.37      3.54      9273.33        1224.03
+stress-ng: metrc: [563] cache          47883934    130.00    107.95      0.56    368331.21      441289.14
+stress-ng: metrc: [563] vm              5861766    130.18     83.83     53.93     45028.58       42552.02
+stress-ng: metrc: [563] timer          17327961    129.99     20.96    138.71    133305.50      108520.96
+stress-ng: metrc: [563] sock              44417    129.99     16.16     96.33       341.70         394.87

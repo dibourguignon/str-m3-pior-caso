@@ -1,0 +1,10 @@
+linux mediana etapa1 = 1552 us
+  1. Tarefa          n=10000  med=    1552  HWM/med1=   3.52  p99/med1= 1.26  CV=  7.5%  (max-min)/min=  266.1%
+  2. Comportamental  n=3000   med=    1733  HWM/med1=   3.04  p99/med1= 1.32  CV=  7.9%  (max-min)/min=  204.9%
+  3. Intertarefas    n=10000  med=    1843  HWM/med1=   3.77  p99/med1= 1.68  CV= 13.2%  (max-min)/min=  281.0%
+  4. Sistema         n=10000  med=    2769  HWM/med1=  44.82  p99/med1= 6.93  CV= 73.9%  (max-min)/min= 4381.2%
+esp32 mediana etapa1 = 2223 us
+  1. Tarefa          n=10000  med=    2223  HWM/med1=   1.02  p99/med1= 1.01  CV=  0.6%  (max-min)/min=    4.4%
+  2. Comportamental  n=3000   med=    2238  HWM/med1=   1.05  p99/med1= 1.02  CV=  0.6%  (max-min)/min=    6.6%
+  3. Intertarefas    n=10000  med=    3336  HWM/med1=   1.77  p99/med1= 1.76  CV=  3.5%  (max-min)/min=   20.3%
+  4. Sistema         n=10000  med=    7437  HWM/med1=   6.84  p99/med1= 5.20  CV= 23.6%  (max-min)/min=  249.7%

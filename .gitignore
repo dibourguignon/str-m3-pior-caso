@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.pio/
+cov/
+cov1024/
+bin/
+*.gcda
+*.gcno

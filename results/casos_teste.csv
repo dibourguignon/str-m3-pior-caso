@@ -1,0 +1,8 @@
+caso,descricao,n,repeticoes,ok,hwm_us
+1,aleatorio N=32768 (mesma entrada da etapa 1),32768,1000,sim,4654.459
+2,entrada vazia (n=0),0,1000,sim,0.321
+3,um unico simbolo repetido (n=1000),1000,1000,sim,17.974
+4,dois simbolos (n=999),999,1000,sim,15.479
+5,256 simbolos com frequencias iguais,256,1000,sim,49.262
+6,frequencias de Fibonacci (arvore degenerada),17710,1000,sim,193.321
+7,validacao detecta saida corrompida,64,1000,sim,14.346

@@ -1,0 +1,3 @@
+./huffman.gcno:cannot open notes file
+./huffman.gcda:cannot open data file, assuming not executed
+No executable lines

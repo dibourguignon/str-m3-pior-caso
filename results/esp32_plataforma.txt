@@ -1,0 +1,36 @@
+drv:0x00,cs0_drv:0x00,h���ST Offset   Length
+I �ets Jul 29 2019 12:21:46
+rst:0x1 (POWERON_RESET),boot:0x1f (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0040,len:6272
+load:0x40078000,len:15848
+load:0x40080400,len:3920
+entry 0x4008063c
+### PLATAFORMA
+chip: ESP32 modelo 1 rev 3.1, 2 nucleos, flash 4 MB
+ESP-IDF: 6.0.1, FreeRTOS tick 1000 Hz, CPU 240 MHz fixa (sem DFS)
+N=1024 semente=20261118 CHUNK=128 EVT_BYTES=256 heap livre=250720
+calib N=512: min 1282 us, media 1318.1 us
+calib N=768: min 1739 us, media 1774.0 us
+calib N=1024: min 2193 us, media 2222.8 us
+calib N=1536: min 3075 us, media 3108.0 us
+calib N=2048: min 3964 us, media 3989.5 us
+busy: 79.71 iter/us -> sensor 19927 iter, logger 119564 iter
+### FIM PLATAFORMA
+### INICIO casos_teste n=7
+etapa1: bits codificados 6372 (6.22 bits/simbolo)
+### INICIO etapa1_tarefa n=10000 falhas=0 eventos=0 uart_bytes=0 uart_quadros_ok=0 uart_quadros_ruins=0 liberacoes_perdidas=0
+### INICIO etapa2_comportamental n=3000 falhas=0 eventos=0 uart_bytes=0 uart_quadros_ok=0 uart_quadros_ruins=0 liberacoes_perdidas=0
+etapa3: timer iniciado
+progresso etapa3: 2000/10000 ativacoes, liberacoes perdidas 0, eventos 0, uart bytes 0, quadros ok 0, ruins 0
+progresso etapa3: 4000/10000 ativacoes, liberacoes perdidas 0, eventos 0, uart bytes 0, quadros ok 0, ruins 0
+progresso etapa3: 6000/10000 ativacoes, liberacoes perdidas 0, eventos 0, uart bytes 0, quadros ok 0, ruins 0
+progresso etapa3: 8000/10000 ativacoes, liberacoes perdidas 0, eventos 0, uart bytes 0, quadros ok 0, ruins 0
+### INICIO etapa3_intertarefas n=10000 falhas=0 eventos=0 uart_bytes=0 uart_quadros_ok=0 uart_quadros_ruins=0 liberacoes_perdidas=0
+### UART_ESTRESSE ON
+### UART_ESTRESSE OFF
+estresse UART: PC enviou 4457 quadros, 1167734 bytes em 101.5 s (11505 B/s)
+### INICIO etapa4_sistema n=10000 falhas=0 eventos=15863 uart_bytes=1167360 uart_quadros_ok=4455 uart_quadros_ruins=0 liberacoes_perdidas=0
+### CAMPANHA CONCLUIDA

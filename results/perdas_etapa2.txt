@@ -1,0 +1,7 @@
+D = 6549.1 us
+perdas = 0
+ativacoes com perda: 
+distancias: 
+S = None
+rajadas (>=2) = 0, maior = 0, isoladas = 0
+comprimentos das sequencias: 

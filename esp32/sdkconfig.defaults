@@ -1,0 +1,14 @@
+# CPU fixa em 240 MHz, sem gerenciamento dinamico de energia (equivalente a governor "performance")
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+CONFIG_PM_ENABLE=n
+# Tick do FreeRTOS em 1 kHz
+CONFIG_FREERTOS_HZ=1000
+# -O2 (mesmo nivel da plataforma Linux)
+CONFIG_COMPILER_OPTIMIZATION_PERF=y
+# Watchdog de tarefas desligado (tarefas de carga de baixa prioridade podem monopolizar o nucleo 1)
+CONFIG_ESP_TASK_WDT_EN=n
+CONFIG_ESP_TASK_WDT_INIT=n
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_ESP_CONSOLE_UART_BAUDRATE=115200

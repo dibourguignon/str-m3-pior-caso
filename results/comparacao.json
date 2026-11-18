@@ -1,0 +1,84 @@
+{
+ "linux": {
+  "mediana_etapa1_us": 1551.682,
+  "etapas": [
+   {
+    "etapa": "1. Tarefa",
+    "n": 10000,
+    "mediana_us": 1551.682,
+    "hwm_sobre_mediana1": 3.5171819999200866,
+    "p99_sobre_mediana1": 1.26025739165628,
+    "cv_pct": 7.5426810334109415,
+    "amplitude_rel_pct": 266.07692410887967
+   },
+   {
+    "etapa": "2. Comportamental",
+    "n": 3000,
+    "mediana_us": 1732.5430000000001,
+    "hwm_sobre_mediana1": 3.041314521918795,
+    "p99_sobre_mediana1": 1.3167693187134992,
+    "cv_pct": 7.889488735256441,
+    "amplitude_rel_pct": 204.87394881979037
+   },
+   {
+    "etapa": "3. Intertarefas",
+    "n": 10000,
+    "mediana_us": 1842.9785,
+    "hwm_sobre_mediana1": 3.768290796696746,
+    "p99_sobre_mediana1": 1.6788261125668797,
+    "cv_pct": 13.150282457847638,
+    "amplitude_rel_pct": 281.01819210202905
+   },
+   {
+    "etapa": "4. Sistema",
+    "n": 10000,
+    "mediana_us": 2769.0965,
+    "hwm_sobre_mediana1": 44.82283870019759,
+    "p99_sobre_mediana1": 6.92500619327931,
+    "cv_pct": 73.85338812059925,
+    "amplitude_rel_pct": 4381.189334697541
+   }
+  ]
+ },
+ "esp32": {
+  "mediana_etapa1_us": 2223.0,
+  "etapas": [
+   {
+    "etapa": "1. Tarefa",
+    "n": 10000,
+    "mediana_us": 2223.0,
+    "hwm_sobre_mediana1": 1.01889338731444,
+    "p99_sobre_mediana1": 1.0125955915429599,
+    "cv_pct": 0.5628998440291149,
+    "amplitude_rel_pct": 4.426002766251729
+   },
+   {
+    "etapa": "2. Comportamental",
+    "n": 3000,
+    "mediana_us": 2238.0,
+    "hwm_sobre_mediana1": 1.0544309491677912,
+    "p99_sobre_mediana1": 1.0184435447593343,
+    "cv_pct": 0.5544863447965926,
+    "amplitude_rel_pct": 6.6424021838034575
+   },
+   {
+    "etapa": "3. Intertarefas",
+    "n": 10000,
+    "mediana_us": 3336.0,
+    "hwm_sobre_mediana1": 1.7669815564552407,
+    "p99_sobre_mediana1": 1.7557354925775979,
+    "cv_pct": 3.5085864919127276,
+    "amplitude_rel_pct": 20.269442743417024
+   },
+   {
+    "etapa": "4. Sistema",
+    "n": 10000,
+    "mediana_us": 7437.0,
+    "hwm_sobre_mediana1": 6.843454790823212,
+    "p99_sobre_mediana1": 5.201079622132253,
+    "cv_pct": 23.62798591527226,
+    "amplitude_rel_pct": 249.72413793103448
+   }
+  ]
+ }
+}
