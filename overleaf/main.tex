@@ -363,20 +363,23 @@ que cobrir 100\% dos caminhos não garante encontrar o WCRT.
 
 \begin{table}[H]
 \centering
-\caption{HWM acumulado (\textmu s) por número de amostras.}
+\caption{HWM acumulado (\textmu s) depois de 10, 20, 100 e 1.000 amostras e
+ao final da etapa.}
 \label{tab:conv}
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lccccccccc@{}}
+\small
+\begin{tabular}{@{}lcccccc@{}}
 \toprule
-Etapa & 10 & 20 & 100 & 1.000 & 3.000 & 10.000 & Saltos & Último salto & 95\% do final \\
+Etapa & 10 & 20 & 100 & 1.000 & Final & Último aumento (ativação) \\
 \midrule
-1 & 2.250  & 2.250  & 2.253  & 2.262  & 2.264  & 2.265  & 8  & 4.186 & 1 \\
-2 & 2.344  & 2.344  & 2.344  & 2.344  & 2.344  & --     & 1  & 1     & 1 \\
-3 & 3.451  & 3.872  & 3.908  & 3.916  & 3.922  & 3.928  & 8  & 3.872 & 11 \\
-4 & 10.364 & 10.879 & 11.642 & 15.142 & 15.213 & 15.213 & 11 & 2.826 & 186 \\
+1 & 2.250  & 2.250  & 2.253  & 2.262  & 2.265  & 4.186 \\
+2 & 2.344  & 2.344  & 2.344  & 2.344  & 2.344  & 1 \\
+3 & 3.451  & 3.872  & 3.908  & 3.916  & 3.928  & 3.872 \\
+4 & 10.364 & 10.879 & 11.642 & 15.142 & 15.213 & 2.826 \\
 \bottomrule
 \end{tabular}
+
+\vspace{2pt}
+{\scriptsize Final = todas as ativações da etapa (3.000 na etapa 2; 10.000 nas demais).\par}
 \end{table}
 
 Nas etapas 1 a 3, o HWM estabiliza cedo (Figura~\ref{fig:conv}). Há saltos
@@ -395,23 +398,21 @@ ativação 2.826 o HWM não mudou, mas isso não prova que ele chegou ao WCRT.
 \caption{Margens sobre o HWM(100\%) da etapa 1 (2.265\us).}
 \label{tab:margens}
 \small
-\begin{tabular}{@{}cccccc@{}}
+\begin{tabular}{@{}cccc@{}}
 \toprule
-Margem & Limite (\textmu s) & Etapa 2 & Etapa 3 & Etapa 4 & HWM4 $-$ limite (\textmu s) \\
+Margem & Limite (\textmu s) & Etapas que excedem & Falta para cobrir a etapa 4 (\textmu s) \\
 \midrule
-10\% & 2.492 & cobre & não cobre & não cobre & 12.721 \\
-25\% & 2.831 & cobre & não cobre & não cobre & 12.382 \\
-50\% & 3.398 & cobre & não cobre & não cobre & 11.815 \\
+10\% & 2.492 & 3 e 4 & 12.721 \\
+25\% & 2.831 & 3 e 4 & 12.382 \\
+50\% & 3.398 & 3 e 4 & 11.815 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 As três margens cobrem a etapa 2, que precisaria de 3,5\%, e falham a partir
-da etapa 3, que precisaria de 73,4\%; a etapa 4 precisaria de 572\%. Com a
-margem de 50\%, 95,45\% das ativações da etapa 3 ficam abaixo do limite, mas o
-HWM não. O desvio-padrão sobe de 13\us{} na etapa 1 para 118\us{} na etapa 3 e
-1.769\us{} na etapa 4, e uma margem fixa calculada no teste isolado não
-acompanha essa mudança. É a situação do exemplo da aula~\cite{aula}, com
+da etapa 3, que precisaria de 73,4\%; a etapa 4 precisaria de 572\%. O
+desvio-padrão sobe de 13\us{} (etapa 1) para 1.769\us{} (etapa 4), e uma margem
+fixa calculada no teste isolado não acompanha essa mudança. É a situação do exemplo da aula~\cite{aula}, com
 tarefas que variam entre 12 e 14\ms{} e entre 10 e 16\ms: as médias são
 parecidas, mas a margem que serve para a primeira não serve para a segunda. Na
 etapa 3 a variação ainda é pequena (CV de 3,5\%), e mesmo assim são necessários
@@ -431,43 +432,42 @@ bloqueio observado foi de 587\us).
 \label{sec:expD}
 As análises das Seções 3 e 4 foram repetidas nas etapas 3 e 4 para quatro
 valores de $D$: o HWM(100\%) da etapa 1, o $D$ fixo, um valor intermediário
-($7.140\us$) e o HWM(99\%) da etapa 4. Os resultados completos estão em
-\texttt{results/esp32\_expD.csv}.
+($7.140\us$) e o HWM(99\%) da etapa 4 (\texttt{results/esp32\_expD.csv}).
 
 \begin{table}[H]
 \centering
-\caption{Deadlines alternativos. I/R/M = perdas isoladas / número de rajadas /
-maior rajada.}
+\caption{Perdas com quatro valores de $D$ nas etapas 3 e 4.}
 \label{tab:expD}
 \footnotesize
-\setlength{\tabcolsep}{3.6pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}lcccccccccc@{}}
+\begin{tabular}{@{}clcccccc@{}}
 \toprule
-& \multicolumn{3}{c}{Etapa 3} & \multicolumn{7}{c}{Etapa 4} \\
-\cmidrule(lr){2-4}\cmidrule(l){5-11}
-$D$ (\textmu s) & Prazo (\%) & $S$ & $k{=}20$ & Prazo (\%) & $S$ & $k{=}10$ & $k{=}20$ & $k{=}50$ & I/R/M & Perdas \\
+Etapa & $D$ (\textmu s) & No prazo (\%) & $S$ & $(m,20)$ & Isoladas & Rajadas & Maior seq. \\
 \midrule
-2.265 (HWM etapa 1)    & 0,00   & 1  & (0,20)  & 0,00  & 1 & (0,10) & (0,20)  & (0,50)  & 0/1/10.000     & 10.000 \\
-2.718 ($D$ fixo)       & 0,00   & 1  & (0,20)  & 0,00  & 1 & (0,10) & (0,20)  & (0,50)  & 0/1/10.000     & 10.000 \\
-7.140 (intermediário)  & 100,00 & -- & (20,20) & 44,75 & 1 & (0,10) & (1,20)  & (11,50) & 1.267/1.258/15 & 5.525 \\
-11.562 (HWM(99\%) etapa 4) & 100,00 & -- & (20,20) & 99,01 & 2 & (8,10) & (18,20) & (46,50) & 99/0/--        & 99 \\
+3 & 2.265 (HWM etapa 1)       & 0,00   & 1  & (0,20)  & 0     & 1     & 10.000 \\
+3 & 2.718 ($D$ fixo)          & 0,00   & 1  & (0,20)  & 0     & 1     & 10.000 \\
+3 & 7.140 (intermediário)     & 100,00 & -- & (20,20) & 0     & 0     & 0 \\
+3 & 11.562 (HWM(99\%) etapa 4) & 100,00 & -- & (20,20) & 0     & 0     & 0 \\
+\midrule
+4 & 2.265 (HWM etapa 1)       & 0,00   & 1  & (0,20)  & 0     & 1     & 10.000 \\
+4 & 2.718 ($D$ fixo)          & 0,00   & 1  & (0,20)  & 0     & 1     & 10.000 \\
+4 & 7.140 (intermediário)     & 44,75  & 1  & (1,20)  & 1.267 & 1.258 & 15 \\
+4 & 11.562 (HWM(99\%) etapa 4) & 99,01  & 2  & (18,20) & 99    & 0     & 1 \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
+
+\vspace{2pt}
+{\scriptsize Rajada: duas ou mais perdas seguidas. Maior seq.: maior número de perdas seguidas. Na etapa 4, com $k = 10$ e $k = 50$: (0,10) e (0,50) nos dois primeiros valores de $D$, (0,10) e (11,50) com 7.140\us{} e (8,10) e (46,50) com 11.562\us.\par}
 \end{table}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.52\textwidth]{figuras/esp32_fig7_expD_janela.png}
+\includegraphics[width=0.47\textwidth]{figuras/esp32_fig7_expD_janela.png}
 \caption{Perdas por janela de 20 ativações na etapa 4 para cada valor de $D$.}
 \label{fig:expD}
 \end{figure}
 
-Na etapa 4, com $D = 7.140\us$, 55\% das ativações perdem o prazo: são 1.267
-perdas isoladas e 1.258 rajadas, a maior com 15 perdas, e o resultado é
-$(1,20)$. Com $D$ igual ao HWM(99\%), restam 99 perdas, todas isoladas, com
-$S = 2$, e o resultado é $(18,20)$. Na etapa 3, a partir de $7.140\us$ não há
-perdas.
+Na etapa 4, com $D = 7.140\us$ ainda há rajadas de até 15 perdas, $(1,20)$; com
+$D$ igual ao HWM(99\%), as 99 perdas são todas isoladas, $(18,20)$.
 
 \textbf{Menor $D$ para um $(m,k)$ exigido.} Como o número máximo de perdas por
 janela só diminui quando $D$ aumenta, foi feita uma busca binária sobre os
@@ -533,8 +533,7 @@ Etapa & Mín. & Média & HWM(100\%) & HWM(99\%) & Prazo (\%) & $S$ & $k{=}20$ & 
 No Linux, o HWM já fica em 3,5 vezes a mediana na tarefa isolada (1,02 no
 ESP32) e não estabilizou em nenhuma etapa. Na etapa 4, 68\% das perdas tiveram
 latência de início acima de 500\us{} (máximo de 68\ms): a tarefa estava pronta
-e não foi despachada, por causa do kernel sem PREEMPT\_RT e do hipervisor. No
-ESP32, cada aumento do tempo tem uma causa identificável.
+e não foi despachada, por causa do kernel sem PREEMPT\_RT e do hipervisor.
 
 \subsection{Ameaças à validade}
 \textbf{Plataforma e cache.} No ESP32 o código roda da flash por meio do cache,
@@ -603,8 +602,7 @@ systems. \textit{IEEE Transactions on Computers}, v.~50, n.~4, p.~308--321,
 2001.
 
 \bibitem{espidf} ESPRESSIF SYSTEMS. \textit{ESP-IDF Programming Guide}.
-Disponível em: \url{https://docs.espressif.com/projects/esp-idf}. Acesso em:
-18 nov. 2026.
+\url{https://docs.espressif.com/projects/esp-idf}.
 
 \end{thebibliography}
 
