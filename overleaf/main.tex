@@ -126,9 +126,10 @@ etapas.
 \subsection{Etapas: caso, procedimento e critério}
 \textbf{1 -- Tarefa.} \textit{Caso:} Huffman isolado (prioridade 10, núcleo 1),
 sem outras tarefas da aplicação; 10.000 ativações seguidas, com um vetor novo
-gerado antes de cada medição. \textit{Procedimento:} gravar o firmware
-(\texttt{esp32/build.ps1 -Upload}) e executar \texttt{esp32/capture.py COM3},
-que reinicia a placa e grava os CSV de todas as etapas em sequência. Mede-se da
+gerado antes de cada medição. \textit{Procedimento:} gravar o firmware pelo
+PlatformIO (pasta \texttt{esp32/}, ambiente \texttt{campanha}) e executar
+\texttt{capture.py COM3 esp32}, que reinicia a placa e grava os CSV de todas as
+etapas. Mede-se da
 cópia do vetor ao fim da validação. \textit{Critério:} saída idêntica à
 entrada em todas as ativações; o HWM desta etapa define $D$.
 
@@ -432,7 +433,8 @@ bloqueio observado foi de 587\us).
 \label{sec:expD}
 As análises das Seções 3 e 4 foram repetidas nas etapas 3 e 4 para quatro
 valores de $D$: o HWM(100\%) da etapa 1, o $D$ fixo, um valor intermediário
-($7.140\us$) e o HWM(99\%) da etapa 4 (\texttt{results/esp32\_expD.csv}).
+($7.140\us$) e o HWM(99\%) da etapa 4. As listas de perdas e distâncias de
+cada $D$ estão em \texttt{results/esp32\_expD\_perdas\_etapaN.txt}.
 
 \begin{table}[H]
 \centering

@@ -324,9 +324,20 @@ D_list = {
 }
 D_list["D2 = intermediário"] = round((D + st[3]["hwm99"]) / 2, 1)
 expD = []
+# Repete a analise 6.3 completa (lista de perdas, distancias, S, rajadas) para cada D:
+# um arquivo por etapa, com uma secao para cada valor de D.
+expD_txt = {"3. Intertarefas": [], "4. Sistema": []}
 for lbl, dv in sorted(D_list.items(), key=lambda kv: kv[1]):
     for nm, x in (("3. Intertarefas", x3), ("4. Sistema", x4)):
         m = miss_analysis(x, dv)
+        expD_txt[nm].append(
+            f"=== {lbl}: D = {dv:.1f} us ===\n"
+            f"perdas = {m['n_miss']} de {len(x)} ({100 - m['pct_ok']:.2f}%)\n"
+            "ativacoes com perda: " + ", ".join(map(str, m["idx"])) + "\n"
+            "distancias: " + ", ".join(map(str, m["dist"])) + "\n"
+            f"S = {m['S']}\nrajadas (>=2) = {m['n_rajadas']}, maior = {m['maior_rajada']}, "
+            f"isoladas = {m['n_isoladas']}\n"
+            + "".join(f"(m,{k}) = ({m['mk'][k][0]},{k})  " for k in KS) + "\n")
         expD.append({
             "D_rotulo": lbl, "D_us": round(dv, 1), "etapa": nm, "pct_ok": round(m["pct_ok"], 2),
             "perdas": m["n_miss"], "S": m["S"], "mk20": f'({m["mk"][20][0]},20)',
@@ -336,6 +347,9 @@ for lbl, dv in sorted(D_list.items(), key=lambda kv: kv[1]):
 with open(f"{RP}expD.csv", "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=list(expD[0].keys()))
     w.writeheader(); w.writerows(expD)
+for nm, partes in expD_txt.items():
+    with open(f"{RP}expD_perdas_etapa{nm[0]}.txt", "w") as f:
+        f.write(f"Experimento D - {nm}: analise 6.3 e 6.4 para cada valor de D\n\n" + "\n".join(partes))
 
 reqs = [(19, 20), (18, 20), (15, 20), (10, 20)]
 minD = {f"({m_},{k_})": {"etapa4": min_D_for(x4, m_, k_), "etapa3": min_D_for(x3, m_, k_)}

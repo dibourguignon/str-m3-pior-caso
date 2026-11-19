@@ -26,7 +26,7 @@ HWM, HWM(99%), skip factor e (m,k)-firme por janela deslizante.
 | `analysis/compare.py` | Comparação entre plataformas (curvas de excedência) |
 | `data/esp32/*.csv`, `data/*.csv` | Dados brutos (`ativacao,tempo_us`) + detalhe das etapas 3/4 |
 | `results/`, `figures/` | Tabelas, perdas/distâncias, Exp. D, cobertura, plataforma; figuras (`esp32_*` = ESP32) |
-| `report/relatorio.pdf` | Relatório |
+| `relatorio/relatorio.pdf` | Relatório (PDF) |
 
 ## Parâmetros
 
@@ -79,3 +79,9 @@ estresse UART, que é gerado pelo script.
 
 Uma nova campanha gera números diferentes (o tempo depende do hardware e da carga); por isso a
 plataforma e as condições ficam registradas em `results/*plataforma*.txt`.
+
+Os CSV de `data/esp32/` foram coletados com o firmware no modo campanha. Depois da coleta foram
+acrescentados o modo demonstração, a linha `### RESUMO` (impressa depois do envio dos dados de cada
+etapa), uma espera para a serial terminar de transmitir antes de a etapa 4 instalar o driver da UART
+e comentários no código; nada disso altera o trecho medido. As listas completas de perdas e
+distâncias de cada D do Experimento D estão em `results/esp32_expD_perdas_etapaN.txt`.
